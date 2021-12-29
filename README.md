@@ -7,7 +7,8 @@ You may clone the projects to get the whole project. To clone, install [Git](htt
 ```git
 git clone https://github.com/iamnoyon/sweetchat-nextjs.git
 ```
-1. Download and Install [NodeJS](https://nodejs.org/en/) to your machine.
+1. Download and Install [NodeJS](https://nodejs.org/en/) to your machine.<br>
+       _[NodeJS v16.13.1](https://nodejs.org/dist/v16.13.1/node-v16.13.1-x64.msi) is used to build this project._
 2. Open Project and install **"yarn"**. To install **yarn** type this command and hit enter:
       ```git
       npm install --global yarn
