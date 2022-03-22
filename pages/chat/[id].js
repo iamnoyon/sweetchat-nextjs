@@ -1,17 +1,20 @@
 import Head from "next/head";
+import { useAuthState } from "react-firebase-hooks/auth";
 import styled from "styled-components";
 import ChatScreen from "../../components/ChatScreen";
 import Sidebar from "../../components/Sidebar";
-import { db } from "../../firebase";
-function Chat( chat, messages){
+import { auth, db } from "../../firebase";
+import getRecipientEmail from "../../utils/getRecipientEmail";
+function Chat({ chat, messages }){
+    const [user] = useAuthState(auth);
     return (
         <Container>
             <Head>
-                <title>Chat</title>
+                <title>Chat with {getRecipientEmail(chat.users, user)}</title>
             </Head>
             <Sidebar />
             <ChatContainer>
-                <ChatScreen />
+                <ChatScreen chat={chat} messages={messages}/>
             </ChatContainer>
         </Container>
 );
@@ -29,7 +32,7 @@ export async function getServerSideProps(context){
 
     const messages = messagesRes.docs.map((doc) => ({
         id: doc.id,
-        ...doc.data()
+        ...doc.data(),
     })).map((messages) => ({ 
         ...messages,
         timestamp: messages.timestamp.toDate().getTime(),
@@ -42,7 +45,9 @@ export async function getServerSideProps(context){
         id: chatRes.id,
         ...chatRes.data()
 
-    }
+    };
+
+    
     return {
         props: { 
             messages: JSON.stringify(messages),
