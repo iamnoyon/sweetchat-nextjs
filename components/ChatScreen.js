@@ -2,13 +2,36 @@ import { Avatar, IconButton } from "@material-ui/core";
 import { useRouter } from "next/router";
 import { useAuthState } from "react-firebase-hooks/auth";
 import styled from "styled-components";
-import { auth } from "../firebase";
+import { auth, db } from "../firebase";
 import MoreVert from "@material-ui/icons/MoreVert";
 import AttachFileIcon from "@material-ui/icons/AttachFile";
+import { useCollection } from "react-firebase-hooks/firestore";
 
 function ChatScreen({ chat, messages }) {
     const [user] = useAuthState(auth);
     const router = useRouter();
+    const [messagesSnapshot] = useCollection(
+    db
+        .collection("chats")
+        .doc(router.query.id)
+        .collection("messages")
+        .orderBy("timestamp","asc")
+    );
+
+    const showMessage = () =>{
+        if(messagesSnapshot){
+            return messagesSnapshot.docs.map((message) => (
+                <Message 
+                    key={message.id}
+                    user={message.data().user}
+                    message={{
+                        ...message.data(),
+                        timestamp: message.data().timestamp?.toDate().getTime(),
+                    }}
+                />
+            ));
+        }
+    };
     return (
         <Container>
             <Header>
