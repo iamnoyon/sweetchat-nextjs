@@ -9,9 +9,12 @@ import { useCollection } from "react-firebase-hooks/firestore";
 import InsertEmoticonIcon  from "@material-ui/icons/InsertEmoticon";
 import MicIcon from "@material-ui/icons/Mic";
 import Message from "./Message";
+import { useState } from "react";
+import firebase from 'firebase/compat/app';
 
 function ChatScreen({ chat, messages }) {
     const [user] = useAuthState(auth);
+    const [input, setInput] = useState("");
     const router = useRouter();
     const [messagesSnapshot] = useCollection(
     db
@@ -22,7 +25,7 @@ function ChatScreen({ chat, messages }) {
     );
 
     const showMessages = () =>{
-        if(messagesSnapshot){
+        if (messagesSnapshot) {
             return messagesSnapshot.docs.map((message) => (
                 <Message 
                     key={message.id}
@@ -35,23 +38,46 @@ function ChatScreen({ chat, messages }) {
             ));
         }
     };
+
+    const sendMessage = (e) => {
+        e.preventDefault();
+
+        db.collection("users").doc(user.uid).set(
+        {
+            lastSeen: firebase.firestore.FieldValue.serverTimestamp(),
+        },
+
+        { merge: true }
+        );
+
+    db.collection("chats").doc(router.query.id).collection('messages').add({
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+        message: input,
+        user: user.email,
+        photoURL: user.photoURL,
+    });
+
+    setInput("");
+    };
+
     return (
         <Container>
             <Header>
-                <Avatar/>
+                <Avatar />
                 <HeaderInformation>
                     <h3>Receipient Email</h3>
                     <p>Last Seen...</p>
                 </HeaderInformation>
                 <HeaderIcons>
                 <IconButton>
-                        <AttachFileIcon/>
+                        <AttachFileIcon />
                     </IconButton>
                     <IconButton>
-                        <MoreVertIcon/>
+                        <MoreVertIcon />
                     </IconButton>
                 </HeaderIcons>
             </Header>
+
             <MessageContainer>
                 {/*showMessages()*/}
                 <EndOfMessage/>
@@ -59,8 +85,11 @@ function ChatScreen({ chat, messages }) {
 
             <InputContainer>
             <InsertEmoticonIcon />
-            <Input />
-            <MicIcon />
+            <Input value={input} onChange={(e) => setInput(e.terget.value)}/>
+            <button hidden disabled={!input} type="submit" onClick={sendMessage}>
+                Send Message
+            </button>
+            < MicIcon />
             </InputContainer>
         </Container>
     )
