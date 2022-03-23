@@ -11,6 +11,8 @@ import MicIcon from "@material-ui/icons/Mic";
 import Message from "./Message";
 import { useState } from "react";
 import firebase from 'firebase/compat/app';
+import getRecipientEmail from "../utils/getRecipientEmail"
+import TimeAgo from "timeago-react";
 
 function ChatScreen({ chat, messages }) {
     const [user] = useAuthState(auth);
@@ -24,6 +26,11 @@ function ChatScreen({ chat, messages }) {
         .orderBy("timestamp","asc")
     );
 
+    const [recipientSnapshot] = useCollection(
+        db
+            .collection("users")
+            .where("email","==", getRecipientEmail(chat.users, user))
+    );
     const showMessages = () =>{
         if (messagesSnapshot) {
             return messagesSnapshot.docs.map((message) => (
@@ -36,7 +43,9 @@ function ChatScreen({ chat, messages }) {
                     }}
                 />
             ));
-        }
+        } else JSON.parse(messages).map(message =>(
+            <Message key={message.id} user={message.user} message={message} />
+        ))
     };
 
     const sendMessage = (e) => {
@@ -60,13 +69,27 @@ function ChatScreen({ chat, messages }) {
     setInput("");
     };
 
+    const recipient = recipientSnapshot?.docs?.[0]?.data();
+    const recipientEmail = getRecipientEmail(chat.users, user);
     return (
         <Container>
             <Header>
-                <Avatar />
+                {recipient ? (
+                    <Avatar src = {recipient?.photoURL} />
+                ) : (
+                    <Avatar>{recipientEmail[0]}</Avatar>
+                )}
                 <HeaderInformation>
-                    <h3>Receipient Email</h3>
-                    <p>Last Seen...</p>
+                    <h3>{recipientEmail}</h3>
+                    {recipientSnapshot ? (
+                        <p>Last active: {' '}
+                        {recipient?.lastSeen?.toDate() ?(
+                           <TimeAgo datetime={recipient?.lastSeen?.toDate()} /> 
+                        ) : "Unavailable"}
+                        </p>
+                    ): (
+                        <p>Loading Last active...</p>
+                    )}
                 </HeaderInformation>
                 <HeaderIcons>
                 <IconButton>
@@ -79,13 +102,13 @@ function ChatScreen({ chat, messages }) {
             </Header>
 
             <MessageContainer>
-                {/*showMessages()*/}
+                {showMessages()}
                 <EndOfMessage/>
             </MessageContainer>
 
             <InputContainer>
             <InsertEmoticonIcon />
-            <Input value={input} onChange={(e) => setInput(e.terget.value)}/>
+            <Input value={input} onChange={(e) => setInput(e.target.value)}/>
             <button hidden disabled={!input} type="submit" onClick={sendMessage}>
                 Send Message
             </button>
