@@ -1,13 +1,11 @@
-import styles from "styled-components";
+import styled from "styled-components";
 
 function Message({user, message}){
     return(
-        <Constainer>
+        <Container>
             <p>{message}</p>
-        </Constainer>
+        </Container>
     )
 }
 export default Message;
-
-const Constainer = styled.div`
-`;
+const Container = styled.div``;
