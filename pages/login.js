@@ -1,5 +1,5 @@
 import { Button } from "@material-ui/core";
-import Head from "next/Head";
+import Head from "next/head";
 import styled from "styled-components";
 import { auth, provider } from "../firebase";
 
