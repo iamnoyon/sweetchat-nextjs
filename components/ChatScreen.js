@@ -7,7 +7,8 @@ import MoreVertIcon from "@material-ui/icons/MoreVert";
 import AttachFileIcon from "@material-ui/icons/AttachFile";
 import { useCollection } from "react-firebase-hooks/firestore";
 import InsertEmoticonIcon  from "@material-ui/icons/InsertEmoticon";
-//import { Input } from "@material-ui/icons";
+import MicIcon from "@material-ui/icons/Mic";
+import Message from "./Message";
 
 function ChatScreen({ chat, messages }) {
     const [user] = useAuthState(auth);
@@ -52,13 +53,14 @@ function ChatScreen({ chat, messages }) {
                 </HeaderIcons>
             </Header>
             <MessageContainer>
-                {showMessages()}
+                {/*showMessages()*/}
                 <EndOfMessage/>
             </MessageContainer>
 
             <InputContainer>
             <InsertEmoticonIcon />
             <Input />
+            <MicIcon />
             </InputContainer>
         </Container>
     )
@@ -112,6 +114,9 @@ const HeaderInformation = styled.div`
 const HeaderIcons = styled.div`
 `;
 const MessageContainer = styled.div`
+padding: 30px;
+background-color: #e5ded8;
+min-height: 90vh;
 `;
 const EndOfMessage = styled.div`
 `;
