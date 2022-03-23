@@ -13,6 +13,7 @@ import { useRef, useState } from "react";
 import firebase from 'firebase/compat/app';
 import getRecipientEmail from "../utils/getRecipientEmail"
 import TimeAgo from "timeago-react";
+import { Send } from "@material-ui/icons";
 
 function ChatScreen({ chat, messages }) {
     const [user] = useAuthState(auth);
@@ -117,10 +118,13 @@ function ChatScreen({ chat, messages }) {
             <InputContainer>
             <InsertEmoticonIcon />
             <Input value={input} onChange={(e) => setInput(e.target.value)}/>
-            <button hidden disabled={!input} type="submit" onClick={sendMessage}>
-                Send Message
-            </button>
             < MicIcon />
+            <ExIcon>
+            <button disabled={!input} type="submit" onClick={sendMessage}>
+                <Send/>
+            </button>
+            </ExIcon>
+            
             </InputContainer>
         </Container>
     )
@@ -135,7 +139,6 @@ flex: 1;
 outline: 0;
 border:none;
 border-radius: 10px;
-background-color: whitesmoke;
 padding: 20px;
 margin-left: 15px;
 margin-right: 15px;
@@ -143,6 +146,7 @@ margin-right: 15px;
 const InputContainer = styled.form`
 display: flex;
 align-items: center;
+background-color: whitesmoke;
 padding: 10px;
 position: sticky;
 bottom: 0;
@@ -180,4 +184,7 @@ min-height: 90vh;
 `;
 const EndOfMessage = styled.div`
 margin-bottom: 50px;
+`;
+const ExIcon = styled.div`
+padding: 15px;
 `;
